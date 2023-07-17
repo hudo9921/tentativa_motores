@@ -14,18 +14,19 @@ function main() {
   camera.rotation.x = -Math.PI / 60;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('black');
+  scene.background = new THREE.Color('blue');
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  const ambientLight = new THREE.AmbientLight(0x0000ff, 0.05);
   scene.add(ambientLight);
 
   const loader = new GLTFLoader();
+  const loader2 = new GLTFLoader();
   let model;
   loader.load(
     'soldier.glb',
     (gltf) => {
       model = gltf.scene;
-      model.scale.set(0.1, 0.1, 0.1);
+      model.scale.set(0.05, 0.05, 0.05);
       model.position.set(0, 0, 0);
       model.rotation.y = Math.PI;
       scene.add(model);
@@ -37,7 +38,25 @@ function main() {
       console.error('Failed to load soldier:', error);
     }
   );
-
+  
+  let street;
+  loader2.load(
+    'Street.glb',
+    (gltf) => {
+      street = gltf.scene;
+      street.scale.set(1, 1, 1);
+      street.position.set(1.6, -0.9, -21.5);
+	  street.rotation.y =-Math.PI/2
+      scene.add(street);
+    },
+    (progress) => {
+      console.log('Loading street:', (progress.loaded / progress.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Failed to load street:', error);
+    }
+  );
+  
   let moveRight = false;
   let moveLeft = false;
   let jump = false;
@@ -56,7 +75,7 @@ function main() {
       if (!jumping) {
         jump = true;
         jumping = true;
-        yVelocity = 0.2; // Initial jump velocity
+        yVelocity = 0.12; // Initial jump velocity
       }
     }
   }
@@ -72,10 +91,12 @@ function main() {
   function updateCharacter() {
     const speed = 0.1;
     if (moveRight) {
-      model.position.x += speed;
+      model.position.z += speed;
+	  camera.position.z+=speed;
     }
     if (moveLeft) {
-      model.position.x -= speed;
+      model.position.z -= speed;
+	  camera.position.z-=speed;
     }
     if (jump) {
       model.position.y += yVelocity;
